@@ -12,11 +12,19 @@ start:
  mov ax, ds
  mov es, ax
  ; Copiar 13 bytes de origen a destino
- mov si, origen
- mov di, destino
- mov cx, 13
- cld ; DF=0: de baja a alta direccion
- rep movsb
+mov si, origen
+mov di, destino
+mov cx, 13          ; longitud total
+cld
+
+mov ax, cx
+shr cx, 1           ; CX = 6 (palabras de 2 bytes)
+rep movsw           ; copia 12 bytes (6 words)
+
+and ax, 1           ; ¿longitud impar? (13 AND 1 = 1)
+jz .fin_copia
+movsb               ; copia el byte 13 sobrante
+.fin_copia:
  ; Mostrar el resultado
  mov ah, 09h
  mov dx, msgCop
